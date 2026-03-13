@@ -260,8 +260,12 @@ const Accordion = ({ title, isOpen, onToggle, children, icon: Icon, showBreakOpt
 
 // 新增：視覺化分頁分隔符
 const PageBreakIndicator = () => (
-  <div className="w-full h-8 bg-gray-200 border-y border-dashed border-gray-400 my-4 flex items-center justify-center text-xs text-gray-600 font-bold tracking-wider print:hidden">
-    --- 強制換頁 (Page 2 Start) ---
+  <div className="w-full flex items-center gap-3 my-3 print:hidden">
+    <div className="flex-1 border-t-2 border-dashed border-blue-300"></div>
+    <span className="text-[10px] text-blue-400 font-bold px-2 py-0.5 rounded border border-blue-200 bg-blue-50 whitespace-nowrap">
+      ✂ 強制換頁
+    </span>
+    <div className="flex-1 border-t-2 border-dashed border-blue-300"></div>
   </div>
 );
 
