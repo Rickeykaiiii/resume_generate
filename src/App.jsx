@@ -866,6 +866,7 @@ export default function App() {
                  <TextField label="獎項名稱" value={item.title} onChange={(v) => updateItem('awards', item.id, 'title', v)} />
                  <TextField label="頒發機構" value={item.awarder} onChange={(v) => updateItem('awards', item.id, 'awarder', v)} />
                  <TextField label="時間" value={item.date} onChange={(v) => updateItem('awards', item.id, 'date', v)} />
+                 <TextField multiline label="描述" value={item.summary} onChange={(v) => updateItem('awards', item.id, 'summary', v)} />
                </div>
             ))}
           </Accordion>
