@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Mail, Phone, MapPin, Linkedin, Link as LinkIcon, 
-  Plus, Trash2, ChevronDown, ChevronUp, Printer, 
-  Download, Github, Globe, Briefcase, Award, 
+import {
+  Mail, Phone, MapPin, Linkedin, Link as LinkIcon,
+  Plus, Trash2, ChevronDown, ChevronUp, Printer,
+  Download, Github, Globe, Briefcase, Award,
   BookOpen, Heart, User, PenTool, Layout, FileJson,
   Upload, FileBadge, Loader2, Image as ImageIcon,
   ScanLine, FileInput, Settings, Maximize, Minimize,
   Building, Eye, EyeOff
 } from 'lucide-react';
+
+// CJS interop：html2pdfLib 可能是 { html2pdf: fn } 或直接是 fn
 
 // --- 初始數據 ---
 const initialData = {
@@ -285,7 +287,6 @@ const PageBreakIndicator = () => (
 export default function App() {
   const [resume, setResume] = useState(initialData);
   const [openSection, setOpenSection] = useState('basics');
-  const [isDownloading, setIsDownloading] = useState(false);
   const [showPageGuides, setShowPageGuides] = useState(false);
   const fileInputRef = useRef(null);
   const resumeRef = useRef(null);
@@ -421,45 +422,16 @@ export default function App() {
     }));
   };
 
-  const handleDownloadPDF = async () => {
-    setIsDownloading(true);
-    const element = resumeRef.current;
-    
-    // 導出時暫時關閉分頁線
+  const handleDownloadPDF = () => {
+    // 關閉分頁線輔助顯示
     const guidesVisible = showPageGuides;
     if (guidesVisible) setShowPageGuides(false);
 
-    // 等待渲染更新
-    await new Promise(r => setTimeout(r, 200));
-
-    const opt = {
-      margin: 0,
-      filename: `${resume.basics.name || 'resume'}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['css', 'legacy'] }
-    };
-
-    try {
-      if (!window.html2pdf) {
-        await new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
-      }
-      await window.html2pdf().set(opt).from(element).save();
-    } catch (err) {
-      console.error("PDF generation failed", err);
-      alert("PDF 下載失敗，請嘗試移除外部圖片或使用本地上傳的圖片。\n(備用方案：正在打開打印窗口...)");
+    // 等一幀讓 UI 更新，再打開打印
+    setTimeout(() => {
       window.print();
-    } finally {
-      setIsDownloading(false);
       if (guidesVisible) setShowPageGuides(true);
-    }
+    }, 100);
   };
 
   const handleExportJson = () => {
@@ -530,7 +502,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 font-sans text-gray-900 overflow-hidden">
+    <div className="flex h-screen bg-gray-100 font-sans text-gray-900 overflow-hidden print:block print:h-auto print:overflow-visible print:bg-white">
       <input
         type="file"
         ref={fileInputRef}
@@ -561,14 +533,13 @@ export default function App() {
             >
               <FileJson size={16} />
             </button>
-            <button 
+            <button
               onClick={handleDownloadPDF}
-              disabled={isDownloading}
-              className={`flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700 text-sm font-medium transition-colors ${isDownloading ? 'opacity-70 cursor-wait' : ''}`}
+              className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700 text-sm font-medium transition-colors"
               title="下載 PDF 文件"
             >
-              {isDownloading ? <Loader2 size={16} className="animate-spin" /> : <Printer size={16} />}
-              {isDownloading ? '生成中...' : '導出'}
+              <Printer size={16} />
+              導出
             </button>
           </div>
         </div>
@@ -832,24 +803,47 @@ export default function App() {
             visible={resume.sections.skills?.visible}
             onToggleVisible={() => toggleSectionVisible('skills')}
           >
-            <div className="text-xs text-gray-400 mb-2">關鍵詞請用逗號分隔</div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-gray-400">關鍵詞請用逗號分隔</span>
+              <button
+                onClick={() => {
+                  const newItem = { id: Date.now().toString(), name: "新技能", keywords: [] };
+                  setResume(prev => ({
+                    ...prev,
+                    sections: {
+                      ...prev.sections,
+                      skills: { ...prev.sections.skills, items: [...prev.sections.skills.items, newItem] }
+                    }
+                  }));
+                }}
+                className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 px-2 py-1 rounded hover:bg-blue-50"
+              >
+                <Plus size={13} /> 添加
+              </button>
+            </div>
             {resume.sections.skills?.items?.map(item => (
               <div key={item.id} className="mb-3 p-3 bg-white border border-gray-200 rounded shadow-sm">
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                   <div className="w-1/3">
-                    <input 
+                    <input
                       className="w-full p-1 border-b border-gray-200 text-sm font-bold focus:border-blue-500 outline-none"
                       value={item.name}
                       onChange={(e) => updateItem('skills', item.id, 'name', e.target.value)}
                     />
                   </div>
-                  <div className="w-2/3">
-                    <input 
+                  <div className="flex-1">
+                    <input
                       className="w-full p-1 border-b border-gray-200 text-sm focus:border-blue-500 outline-none"
                       value={item.keywords.join(", ")}
                       onChange={(e) => updateItem('skills', item.id, 'keywords', e.target.value.split(",").map(s => s.trim()))}
                     />
                   </div>
+                  <button
+                    onClick={() => removeItem('skills', item.id)}
+                    className="text-gray-300 hover:text-red-500 transition-colors flex-shrink-0"
+                  >
+                    <Trash2 size={14} />
+                  </button>
                 </div>
               </div>
             ))}
@@ -927,7 +921,7 @@ export default function App() {
       </div>
 
       {/* --- 右側預覽 (Bronzor 風格) --- */}
-      <div className="flex-1 overflow-y-auto bg-white p-8 flex justify-center print:p-0 print:bg-white print:overflow-visible relative">
+      <div className="flex-1 overflow-y-auto bg-white p-8 flex justify-center print:block print:p-0 print:bg-white print:overflow-visible relative">
         <div 
           ref={resumeRef} // 綁定 ref 用於 PDF 生成
           className="bg-white w-[210mm] min-h-[297mm] print:w-full flex flex-col relative"
@@ -962,8 +956,22 @@ export default function App() {
               />
             )}
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{resume.basics.name}</h1>
-              <p className="text-lg text-blue-600 font-medium mb-4">{resume.basics.headline}</p>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{resume.basics.name}</h1>
+                  <p className="text-lg text-blue-600 font-medium mb-4">{resume.basics.headline}</p>
+                </div>
+                <div className="flex flex-col items-center flex-shrink-0">
+                  <img
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=72x72&data=https://www.rickeykai.space/&margin=0"
+                    alt="QR Code"
+                    width={72}
+                    height={72}
+                    className="block"
+                  />
+                  <span className="text-[9px] text-gray-400 mt-0.5">rickeykai.space</span>
+                </div>
+              </div>
               
               <div className="flex flex-wrap gap-y-2 gap-x-6 text-sm text-gray-600">
                 {resume.basics.email && (
@@ -1001,8 +1009,8 @@ export default function App() {
               
               {/* Summary */}
               {resume.sections.summary?.visible && resume.sections.summary?.content && (
-                <section style={{ pageBreakBefore: resume.sections.summary?.breakBefore ? 'always' : 'auto' }}>
-                  {resume.sections.summary?.breakBefore && !isDownloading && <PageBreakIndicator />}
+                <section style={{ pageBreakBefore: resume.sections.summary?.breakBefore ? 'always' : 'auto', paddingTop: resume.sections.summary?.breakBefore ? '8mm' : undefined }}>
+                  {resume.sections.summary?.breakBefore && <PageBreakIndicator />}
                   <h3 className="text-md font-bold text-gray-900 border-b-2 border-blue-600 pb-1 mb-3 uppercase tracking-wide">
                     {resume.sections.summary.name}
                   </h3>
@@ -1012,8 +1020,8 @@ export default function App() {
 
               {/* Education */}
               {resume.sections.education?.visible && (
-                <section style={{ pageBreakBefore: resume.sections.education?.breakBefore ? 'always' : 'auto' }}>
-                  {resume.sections.education?.breakBefore && !isDownloading && <PageBreakIndicator />}
+                <section style={{ pageBreakBefore: resume.sections.education?.breakBefore ? 'always' : 'auto', paddingTop: resume.sections.education?.breakBefore ? '8mm' : undefined }}>
+                  {resume.sections.education?.breakBefore && <PageBreakIndicator />}
                   <h3 className="text-md font-bold text-gray-900 border-b-2 border-blue-600 pb-1 mb-4 uppercase tracking-wide">
                     {resume.sections.education.name}
                   </h3>
@@ -1025,7 +1033,7 @@ export default function App() {
                           <span className="text-sm text-gray-500 font-medium">{item.date}</span>
                         </div>
                         <div className="flex justify-between text-sm text-gray-700 mb-2">
-                           <span>{item.studyType} · {item.area}</span>
+                           <span>{item.studyType} {item.area}</span>
                         </div>
                         <HtmlContent content={item.summary} className="text-sm" />
                       </div>
@@ -1036,8 +1044,8 @@ export default function App() {
 
               {/* 新增：Internship Preview */}
               {resume.sections.internship?.visible && (
-                <section style={{ pageBreakBefore: resume.sections.internship?.breakBefore ? 'always' : 'auto' }}>
-                  {resume.sections.internship?.breakBefore && !isDownloading && <PageBreakIndicator />}
+                <section style={{ pageBreakBefore: resume.sections.internship?.breakBefore ? 'always' : 'auto', paddingTop: resume.sections.internship?.breakBefore ? '8mm' : undefined }}>
+                  {resume.sections.internship?.breakBefore && <PageBreakIndicator />}
                   <h3 className="text-md font-bold text-gray-900 border-b-2 border-blue-600 pb-1 mb-4 uppercase tracking-wide">
                     {resume.sections.internship.name}
                   </h3>
@@ -1058,8 +1066,8 @@ export default function App() {
 
               {/* Projects */}
               {resume.sections.projects?.visible && (
-                <section style={{ pageBreakBefore: resume.sections.projects?.breakBefore ? 'always' : 'auto' }}>
-                  {resume.sections.projects?.breakBefore && !isDownloading && <PageBreakIndicator />}
+                <section style={{ pageBreakBefore: resume.sections.projects?.breakBefore ? 'always' : 'auto', paddingTop: resume.sections.projects?.breakBefore ? '8mm' : undefined }}>
+                  {resume.sections.projects?.breakBefore && <PageBreakIndicator />}
                   <h3 className="text-md font-bold text-gray-900 border-b-2 border-blue-600 pb-1 mb-4 uppercase tracking-wide">
                     {resume.sections.projects.name}
                   </h3>
@@ -1079,8 +1087,8 @@ export default function App() {
 
                {/* Volunteer */}
                {resume.sections.volunteer?.visible && (
-                <section style={{ pageBreakBefore: resume.sections.volunteer?.breakBefore ? 'always' : 'auto' }}>
-                  {resume.sections.volunteer?.breakBefore && !isDownloading && <PageBreakIndicator />}
+                <section style={{ pageBreakBefore: resume.sections.volunteer?.breakBefore ? 'always' : 'auto', paddingTop: resume.sections.volunteer?.breakBefore ? '8mm' : undefined }}>
+                  {resume.sections.volunteer?.breakBefore && <PageBreakIndicator />}
                   <h3 className="text-md font-bold text-gray-900 border-b-2 border-blue-600 pb-1 mb-4 uppercase tracking-wide">
                     {resume.sections.volunteer.name}
                   </h3>
@@ -1106,8 +1114,8 @@ export default function App() {
               
               {/* Skills */}
               {resume.sections.skills?.visible && (
-                <section style={{ pageBreakBefore: resume.sections.skills?.breakBefore ? 'always' : 'auto' }}>
-                   {resume.sections.skills?.breakBefore && !isDownloading && <PageBreakIndicator />}
+                <section style={{ pageBreakBefore: resume.sections.skills?.breakBefore ? 'always' : 'auto', paddingTop: resume.sections.skills?.breakBefore ? '8mm' : undefined }}>
+                   {resume.sections.skills?.breakBefore && <PageBreakIndicator />}
                    <h3 className="text-sm font-bold text-gray-900 border-b border-blue-300 pb-1 mb-3 uppercase tracking-wide text-blue-800">
                     {resume.sections.skills.name}
                   </h3>
@@ -1130,8 +1138,8 @@ export default function App() {
 
               {/* Awards */}
               {resume.sections.awards?.visible && (
-                 <section style={{ pageBreakBefore: resume.sections.awards?.breakBefore ? 'always' : 'auto' }}>
-                   {resume.sections.awards?.breakBefore && !isDownloading && <PageBreakIndicator />}
+                 <section style={{ pageBreakBefore: resume.sections.awards?.breakBefore ? 'always' : 'auto', paddingTop: resume.sections.awards?.breakBefore ? '8mm' : undefined }}>
+                   {resume.sections.awards?.breakBefore && <PageBreakIndicator />}
                    <h3 className="text-sm font-bold text-gray-900 border-b border-blue-300 pb-1 mb-3 uppercase tracking-wide text-blue-800">
                     {resume.sections.awards.name}
                   </h3>
@@ -1149,8 +1157,8 @@ export default function App() {
 
                {/* Certifications */}
                {resume.sections.certifications?.visible && (
-                 <section style={{ pageBreakBefore: resume.sections.certifications?.breakBefore ? 'always' : 'auto' }}>
-                   {resume.sections.certifications?.breakBefore && !isDownloading && <PageBreakIndicator />}
+                 <section style={{ pageBreakBefore: resume.sections.certifications?.breakBefore ? 'always' : 'auto', paddingTop: resume.sections.certifications?.breakBefore ? '8mm' : undefined }}>
+                   {resume.sections.certifications?.breakBefore && <PageBreakIndicator />}
                    <h3 className="text-sm font-bold text-gray-900 border-b border-blue-300 pb-1 mb-3 uppercase tracking-wide text-blue-800">
                     {resume.sections.certifications.name}
                   </h3>
@@ -1169,8 +1177,8 @@ export default function App() {
 
               {/* Languages */}
               {resume.sections.languages?.visible && (
-                 <section style={{ pageBreakBefore: resume.sections.languages?.breakBefore ? 'always' : 'auto' }}>
-                   {resume.sections.languages?.breakBefore && !isDownloading && <PageBreakIndicator />}
+                 <section style={{ pageBreakBefore: resume.sections.languages?.breakBefore ? 'always' : 'auto', paddingTop: resume.sections.languages?.breakBefore ? '8mm' : undefined }}>
+                   {resume.sections.languages?.breakBefore && <PageBreakIndicator />}
                    <h3 className="text-sm font-bold text-gray-900 border-b border-blue-300 pb-1 mb-3 uppercase tracking-wide text-blue-800">
                     {resume.sections.languages.name}
                   </h3>
@@ -1194,26 +1202,25 @@ export default function App() {
       <style>{`
         @media print {
           /* 核心打印設置 */
-          @page { margin: 0; size: auto; }
-          
-          body { 
-            -webkit-print-color-adjust: exact; 
+          @page { margin: 0; size: A4 portrait; }
+
+          body {
+            -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
             background-color: white !important;
           }
-          
+
           /* 隱藏不必要的元素 */
           .print\\:hidden { display: none !important; }
-          
-          /* 調整佈局佔滿頁面 */
-          .flex { display: block !important; } /* 解除 flex 佈局對打印的影響 */
-          
+
           /* 確保預覽區域充滿 */
+          .print\\:block { display: block !important; }
           .print\\:w-full { width: 100% !important; max-width: none !important; margin: 0 !important; }
           .print\\:shadow-none { box-shadow: none !important; }
           .print\\:bg-white { background-color: white !important; }
           .print\\:overflow-visible { overflow: visible !important; height: auto !important; }
           .print\\:p-0 { padding: 0 !important; }
+          .print\\:h-auto { height: auto !important; }
         }
         
         /* 自定義滾動條 */
