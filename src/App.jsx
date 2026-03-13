@@ -6,7 +6,7 @@ import {
   BookOpen, Heart, User, PenTool, Layout, FileJson,
   Upload, FileBadge, Loader2, Image as ImageIcon,
   ScanLine, FileInput, Settings, Maximize, Minimize,
-  Building 
+  Building, Eye, EyeOff
 } from 'lucide-react';
 
 // --- 初始數據 ---
@@ -225,18 +225,30 @@ const TextField = ({ label, value, onChange, placeholder, multiline = false }) =
 );
 
 // Accordion 組件
-const Accordion = ({ title, isOpen, onToggle, children, icon: Icon, showBreakOption, breakBefore, onToggleBreak }) => (
+const Accordion = ({ title, isOpen, onToggle, children, icon: Icon, showBreakOption, breakBefore, onToggleBreak, visible, onToggleVisible }) => (
   <div className="border-b border-gray-100">
     <div className="flex items-center justify-between bg-white hover:bg-gray-50 transition-colors pr-4">
       <button
         onClick={onToggle}
         className="flex-1 flex items-center gap-3 p-4 text-left"
       >
-        {Icon && <Icon size={18} className="text-blue-600" />}
-        <span className="font-semibold text-gray-700">{title}</span>
+        {Icon && <Icon size={18} className={visible === false ? 'text-gray-300' : 'text-blue-600'} />}
+        <span className={`font-semibold ${visible === false ? 'text-gray-400 line-through' : 'text-gray-700'}`}>{title}</span>
       </button>
-      
+
       <div className="flex items-center gap-2">
+        {onToggleVisible !== undefined && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleVisible();
+            }}
+            title={visible === false ? "顯示此章節" : "隱藏此章節"}
+            className={`p-1.5 rounded transition-colors ${visible === false ? 'text-gray-300 hover:bg-gray-100' : 'text-gray-400 hover:bg-gray-200'}`}
+          >
+            {visible === false ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        )}
         {showBreakOption && (
           <button
             onClick={(e) => {
@@ -348,8 +360,20 @@ export default function App() {
     }));
   };
 
-  const toggleSectionBreak = (sectionKey) => {
+  const toggleSectionVisible = (sectionKey) => {
     setResume(prev => ({
+      ...prev,
+      sections: {
+        ...prev.sections,
+        [sectionKey]: {
+          ...prev.sections[sectionKey],
+          visible: !prev.sections[sectionKey].visible
+        }
+      }
+    }));
+  };
+
+  const toggleSectionBreak = (sectionKey) => {    setResume(prev => ({
       ...prev,
       sections: {
         ...prev.sections,
@@ -663,14 +687,16 @@ export default function App() {
           </Accordion>
 
           {/* 個人總結 (支持換頁) */}
-          <Accordion 
-            title="個人總結" 
+          <Accordion
+            title="個人總結"
             icon={Layout}
-            isOpen={openSection === 'summary'} 
+            isOpen={openSection === 'summary'}
             onToggle={() => setOpenSection(openSection === 'summary' ? null : 'summary')}
             showBreakOption={true}
             breakBefore={resume.sections.summary?.breakBefore}
             onToggleBreak={() => toggleSectionBreak('summary')}
+            visible={resume.sections.summary?.visible}
+            onToggleVisible={() => toggleSectionVisible('summary')}
           >
             <TextField 
               multiline 
@@ -681,14 +707,16 @@ export default function App() {
           </Accordion>
 
           {/* 教育經歷 (支持換頁) */}
-          <Accordion 
-            title="教育經歷" 
+          <Accordion
+            title="教育經歷"
             icon={BookOpen}
-            isOpen={openSection === 'education'} 
+            isOpen={openSection === 'education'}
             onToggle={() => setOpenSection(openSection === 'education' ? null : 'education')}
             showBreakOption={true}
             breakBefore={resume.sections.education?.breakBefore}
             onToggleBreak={() => toggleSectionBreak('education')}
+            visible={resume.sections.education?.visible}
+            onToggleVisible={() => toggleSectionVisible('education')}
           >
              <button onClick={() => addItem('education')} className="w-full py-2 mb-3 border-2 border-dashed border-blue-200 text-blue-600 rounded hover:bg-blue-50 flex justify-center items-center gap-2 text-sm font-medium">
                <Plus size={16} /> 添加學歷
@@ -710,14 +738,16 @@ export default function App() {
           </Accordion>
 
           {/* 新增：實習經歷 (支持換頁) */}
-          <Accordion 
-            title="實習經歷" 
+          <Accordion
+            title="實習經歷"
             icon={Building}
-            isOpen={openSection === 'internship'} 
+            isOpen={openSection === 'internship'}
             onToggle={() => setOpenSection(openSection === 'internship' ? null : 'internship')}
             showBreakOption={true}
             breakBefore={resume.sections.internship?.breakBefore}
             onToggleBreak={() => toggleSectionBreak('internship')}
+            visible={resume.sections.internship?.visible}
+            onToggleVisible={() => toggleSectionVisible('internship')}
           >
             <button onClick={() => addItem('internship')} className="w-full py-2 mb-3 border-2 border-dashed border-blue-200 text-blue-600 rounded hover:bg-blue-50 flex justify-center items-center gap-2 text-sm font-medium">
                <Plus size={16} /> 添加實習
@@ -736,14 +766,16 @@ export default function App() {
           </Accordion>
 
           {/* 項目經歷 (支持換頁) */}
-          <Accordion 
-            title="項目經歷" 
+          <Accordion
+            title="項目經歷"
             icon={Briefcase}
-            isOpen={openSection === 'projects'} 
+            isOpen={openSection === 'projects'}
             onToggle={() => setOpenSection(openSection === 'projects' ? null : 'projects')}
             showBreakOption={true}
             breakBefore={resume.sections.projects?.breakBefore}
             onToggleBreak={() => toggleSectionBreak('projects')}
+            visible={resume.sections.projects?.visible}
+            onToggleVisible={() => toggleSectionVisible('projects')}
           >
             <button onClick={() => addItem('projects')} className="w-full py-2 mb-3 border-2 border-dashed border-blue-200 text-blue-600 rounded hover:bg-blue-50 flex justify-center items-center gap-2 text-sm font-medium">
                <Plus size={16} /> 添加項目
@@ -761,14 +793,16 @@ export default function App() {
           </Accordion>
 
           {/* 志願者/社團 (支持換頁) */}
-          <Accordion 
-            title="社團與志願經歷" 
+          <Accordion
+            title="社團與志願經歷"
             icon={Heart}
-            isOpen={openSection === 'volunteer'} 
+            isOpen={openSection === 'volunteer'}
             onToggle={() => setOpenSection(openSection === 'volunteer' ? null : 'volunteer')}
             showBreakOption={true}
             breakBefore={resume.sections.volunteer?.breakBefore}
             onToggleBreak={() => toggleSectionBreak('volunteer')}
+            visible={resume.sections.volunteer?.visible}
+            onToggleVisible={() => toggleSectionVisible('volunteer')}
           >
             <button onClick={() => addItem('volunteer')} className="w-full py-2 mb-3 border-2 border-dashed border-blue-200 text-blue-600 rounded hover:bg-blue-50 flex justify-center items-center gap-2 text-sm font-medium">
                <Plus size={16} /> 添加經歷
@@ -787,14 +821,16 @@ export default function App() {
           </Accordion>
 
            {/* 技能 */}
-           <Accordion 
-            title="技能" 
+           <Accordion
+            title="技能"
             icon={PenTool}
-            isOpen={openSection === 'skills'} 
+            isOpen={openSection === 'skills'}
             onToggle={() => setOpenSection(openSection === 'skills' ? null : 'skills')}
             showBreakOption={true}
             breakBefore={resume.sections.skills?.breakBefore}
             onToggleBreak={() => toggleSectionBreak('skills')}
+            visible={resume.sections.skills?.visible}
+            onToggleVisible={() => toggleSectionVisible('skills')}
           >
             <div className="text-xs text-gray-400 mb-2">關鍵詞請用逗號分隔</div>
             {resume.sections.skills?.items?.map(item => (
@@ -820,14 +856,16 @@ export default function App() {
           </Accordion>
 
           {/* 榮譽獎項 */}
-          <Accordion 
-            title="榮譽獎項" 
+          <Accordion
+            title="榮譽獎項"
             icon={Award}
-            isOpen={openSection === 'awards'} 
+            isOpen={openSection === 'awards'}
             onToggle={() => setOpenSection(openSection === 'awards' ? null : 'awards')}
             showBreakOption={true}
             breakBefore={resume.sections.awards?.breakBefore}
             onToggleBreak={() => toggleSectionBreak('awards')}
+            visible={resume.sections.awards?.visible}
+            onToggleVisible={() => toggleSectionVisible('awards')}
           >
             {resume.sections.awards?.items?.map(item => (
                <div key={item.id} className="mb-4 p-3 bg-white border border-gray-200 rounded shadow-sm">
@@ -839,14 +877,16 @@ export default function App() {
           </Accordion>
 
            {/* 證書 (新增) */}
-           <Accordion 
-            title="證書" 
+           <Accordion
+            title="證書"
             icon={FileBadge}
-            isOpen={openSection === 'certifications'} 
+            isOpen={openSection === 'certifications'}
             onToggle={() => setOpenSection(openSection === 'certifications' ? null : 'certifications')}
             showBreakOption={true}
             breakBefore={resume.sections.certifications?.breakBefore}
             onToggleBreak={() => toggleSectionBreak('certifications')}
+            visible={resume.sections.certifications?.visible}
+            onToggleVisible={() => toggleSectionVisible('certifications')}
           >
             <button onClick={() => addItem('certifications')} className="w-full py-2 mb-3 border-2 border-dashed border-blue-200 text-blue-600 rounded hover:bg-blue-50 flex justify-center items-center gap-2 text-sm font-medium">
                <Plus size={16} /> 添加證書
@@ -865,14 +905,16 @@ export default function App() {
           </Accordion>
 
           {/* 語言 */}
-           <Accordion 
-            title="語言能力" 
+           <Accordion
+            title="語言能力"
             icon={Globe}
-            isOpen={openSection === 'languages'} 
+            isOpen={openSection === 'languages'}
             onToggle={() => setOpenSection(openSection === 'languages' ? null : 'languages')}
             showBreakOption={true}
             breakBefore={resume.sections.languages?.breakBefore}
             onToggleBreak={() => toggleSectionBreak('languages')}
+            visible={resume.sections.languages?.visible}
+            onToggleVisible={() => toggleSectionVisible('languages')}
           >
             {resume.sections.languages?.items?.map(item => (
                <div key={item.id} className="mb-2 p-2 bg-white border border-gray-200 rounded flex gap-2">
@@ -888,7 +930,7 @@ export default function App() {
       <div className="flex-1 overflow-y-auto bg-white p-8 flex justify-center print:p-0 print:bg-white print:overflow-visible relative">
         <div 
           ref={resumeRef} // 綁定 ref 用於 PDF 生成
-          className="bg-white w-[210mm] min-h-[297mm] shadow-2xl print:shadow-none print:w-full flex flex-col relative"
+          className="bg-white w-[210mm] min-h-[297mm] print:w-full flex flex-col relative"
           style={{ fontFamily: '"Noto Sans SC", sans-serif' }}
         >
           
