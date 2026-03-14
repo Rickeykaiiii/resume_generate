@@ -502,7 +502,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 font-sans text-gray-900 overflow-hidden print:block print:h-auto print:overflow-visible print:bg-white">
+    <div className="flex h-screen bg-gray-100 text-gray-900 overflow-hidden print:block print:h-auto print:overflow-visible print:bg-white">
       <input
         type="file"
         ref={fileInputRef}
@@ -926,7 +926,7 @@ export default function App() {
         <div 
           ref={resumeRef} // 綁定 ref 用於 PDF 生成
           className="bg-white w-[210mm] min-h-[297mm] print:w-full flex flex-col relative"
-          style={{ fontFamily: '"Noto Sans SC", sans-serif' }}
+          style={{ fontFamily: "'Times New Roman', SimSun, '宋体', '宋體', serif" }}
         >
           
           {/* A4 分頁線輔助顯示 */}
