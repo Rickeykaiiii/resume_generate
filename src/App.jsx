@@ -15,7 +15,7 @@ import {
 const initialData = {
   basics: {
     name: "洪葦楷",
-    headline: "通信工程與AI技術方向教師",
+    headline: "資訊科技方向教師",
     email: "hwk@bupt.edu.cn",
     phone: "85363435733",
     location: "澳門",
@@ -27,16 +27,17 @@ const initialData = {
     ],
     picture: {
       url: "https://oss.upcv.tech/resume/avatar/cmk3dfhhx0bf4la2bw3ms7tmm/z1vmetvxl59ivc075aoyphzw.jpg?t=1768382515749",
-      width: 100, // 默認寬度 px
-      ratio: "square" // "square" | "original"
+      width: 100,
+      ratio: "original"
     }
   },
   sections: {
     summary: {
       name: "個人總結",
-      content: "<p>聖若瑟教區中學第五校校友，北京郵電大學信息與通信工程碩士。具備紮實的資訊科技背景，專精於 Python、AI 人工智能及具身智能應用。 在學期間積累豐富的助教與科研指導經驗，擅長將艱深的理工知識轉化為生動的 STEAM 教學內容。熟悉澳門學制與校園文化，熱衷於引導學生參與科創比賽（如全國青少年人工智能創新挑戰賽），致力於培養學生的數碼素養與創新思維。</p>",
+      content: "<p>北京郵電大學信息與通信工程碩士，科研背景為水下無線可見光通信，目前均在投稿 SCI 論文及專利。擁有紮實的電路設計與 Matlab/Python 工程仿真基礎。目前正深入研究 AI 與具身智能應用，開展基於 ROS 與 Isaac 平台的開發實踐，探索具身智能在複雜通信環境下的協同與感知技術。社團實踐經驗豐富，曾主導攝影活動策劃落地。</p>",
       visible: true,
-      breakBefore: false
+      breakBefore: false,
+      items: []
     },
     education: {
       name: "教育經歷",
@@ -45,33 +46,25 @@ const initialData = {
       items: [
         {
           id: "edu1",
-          institution: "北京郵電大學",
-          studyType: "碩士",
+          institution: "碩士在讀｜北京郵電大學",
+          studyType: "",
           area: "信息與通信工程",
           date: "2023-09 - 2026-06",
-          summary: "<ul><li><p>主修課程：高速寬帶互聯網技術、信息搜索與人工智能。</p></li><li><p>教學實踐：擔任研究生課程助教，負責實驗課程設計與作業批改，積累了將複雜技術概念簡化教學的經驗。</p></li><li><p>科研指導： 帶領 5 名研究生進行硬件系統開發，具備良好的團隊指導與技術培訓能力。</p></li></ul>"
+          summary: "<ul><li><p>主修課程：高速寬帶互聯網技術（89）、大數據分析綜合實踐（87）、通感融合理論與技術 （93）</p></li><li><p>科研指導： 擔任科研項目負責人，帶領 5 人研究生團隊完成「水下無線光通信」系統組網。主導硬件系統設計與開發，成功實現複雜水下-空氣多節點穩定通信</p></li></p></li><li><p>教學輔助：擔任研究生課程助教，主導《光通信系統》課程實驗設計</ul>"
         },
         {
           id: "edu2",
-          institution: "北京郵電大學",
-          studyType: "本科",
+          institution: "學士｜北京郵電大學",
+          studyType: "",
           area: "信息與通信工程",
           date: "2019-09 - 2023-07",
-          summary: "<ul><li><p>主修課程：通信原理、信號與系統、無線物聯網基礎與應用、數據結構與算法導論</p></li></ul>"
-        },
-        {
-          id: "edu3",
-          institution: "澳門聖若瑟教區中學第五校",
-          studyType: "中學",
-          area: "",
-          date: "2006-2019",
-          summary: "<p>於本校度過完整的中小學階段。熟悉學校辦學理念、校園環境及學生特質，立志回饋母校，傳承育人精神。</p>"
+          summary: "<ul><li><p>主修課程：現代通信技術（86）、計算機網絡（85）、無線物聯網基礎與應用（94）、python編程與實踐（92） </p></li><li><p> 工程實踐：全國大學生電子設計競賽（簡易電路特性測試儀），其中與 6 人團隊協作完成。負責基礎電路搭建與信號採集模塊調試，實現了對電路增益及頻率響應等參數的自動化測量。</p></li></ul>"
         }
       ]
     },
     internship: {
       name: "實習經歷",
-      visible: true,
+      visible: false,
       breakBefore: false,
       items: [
         {
@@ -86,13 +79,13 @@ const initialData = {
     projects: {
       name: "項目經歷",
       visible: true,
-      breakBefore: false,
+      breakBefore: true,
       items: [
         {
           id: "proj1",
           name: "科研項目",
           date: "2023-2026",
-          summary: "<ul><li><p>國家自然科學基金面上項目：62371058 - 視覺機器學習的水下無線光通信系統信道智能感知與自適應協同方法研究</p></li><li><p>北京自然科學聯合基金前沿項目 ：基於學習增強型視覺方法的大氣無線光信道智能感知與預測機制研究</p></li></ul><p><strong>學術成果</strong></p><ul><li><p>SCI論文1篇：Selective Reconstruction and Gated Fusion for Robust UWOC Receiver Detection，建立了水下無線光通信高精度預測模型，三作</p></li><li><p>將研究成果轉化為教學實踐，輔助設計2個相關實驗課程，覆蓋《光通信系統》及《現代通信技術》等課程，參與了中國大學MOOC上的線上課程</p></li></ul>"
+          summary: "<ul><li><p>國家自然科學基金面上項目：62371058 - 視覺機器學習的水下無線光通信系統信道智能感知與自適應協同方法研究</p></li><li><p>北京自然科學聯合基金前沿項目 ：基於學習增強型視覺方法的大氣無線光信道智能感知與預測機制研究</p></li></ul><p><strong>學術成果</strong></p><ul><li><p>SCI論文一篇在投：Selective Reconstruction and Gated Fusion for Robust UWOC Receiver Detection，建立了水下無線光通信高精度預測模型，三作</p></li><li><p>專利一篇在投：一種基於復合光學系統的水下無線光通信發射裝置及方法，目前審核中，一作</p></li><li><p>將研究成果轉化為教學實踐，輔助設計2個相關實驗課程，覆蓋《光通信系統》及《現代通信技術》等課程，參與了中國大學MOOC上的線上課程</p></li></ul>"
         }
       ]
     },
@@ -106,14 +99,14 @@ const initialData = {
           organization: "北京（高校）澳門學生聯合會",
           position: "宣傳部、資訊部及北京澳生雜誌工作",
           date: "2019-10 - 2023-12",
-          summary: "<ul><li><p>活動統籌與執行： 參與策劃多場大型學生活動，負責視覺設計與宣傳推廣，具備跨部門溝通協調能力。</p></li><li><p>新媒體運營： 主導宣傳視頻的腳本編寫與後期製作，能帶領學生進行校園多媒體創作。</p></li><li><p>校園媒體製作： 統籌《北京澳生雜誌》排版與設計，熟練運用 Photoshop, InDesign 製作宣傳海報及刊物。此技能可應用於學校校刊製作、活動海報設計及校園文化建設。</p></li></ul>"
+          summary: "<ul><li><p>擔任「濠鏡再現」線上攝影比賽策劃，負責方案制定及宣傳推廣</p></li><li><p>擔任「故時現攝」線下攝影實踐課程負責人及講師，獨立完成教學大綱設計與外拍實踐規劃。指導 10 餘名學員掌握攝影技術與實作</p></li><li><p>新媒體運營： 主導宣傳視頻的腳本編寫及現場拍攝</p></li><li><p>校園媒體製作： 參與《北京澳生雜誌》排版與設計，熟練運用 Photoshop, InDesign 製作宣傳海報及刊物。</p></li></ul>"
         },
         {
           id: "vol2",
-          organization: "學校學生會、團委、陽光志協",
+          organization: "北京邮电大學學生會、團委、陽光志協",
           position: "部員",
           date: "2019-2022",
-          summary: "<ul><li><p>擔任宣傳部部員期間，負責設計製作宣傳物料</p></li><li><p>積極組織公益活動，累計服務時長超過 80 小時，具備耐心與服務精神。</p></li></ul>"
+          summary: "<ul><li><p>擔任宣傳部部員期間，負責設計製作宣傳海報等物料，獨立設計校級展板。</p></li><li><p>積極組織公益活動，累計服務時長超過 80 小時。</p></li></ul>"
         }
       ]
     },
@@ -126,21 +119,21 @@ const initialData = {
           id: "aw1",
           title: "北京郵電大學港澳台獎學金",
           awarder: "北京郵電大學",
-          date: "2019-2025",
-          summary: "<p>連續本科四年獲得校級一、二等獎學金，體現卓越學業表現與學習能力。</p>"
+          date: "2019-2023",
+          summary: "<p>連續本科四年獲得校級一、二等獎學金</p>"
         },
         {
           id: "aw2",
           title: "研究生學業獎學金",
           awarder: "北京郵電大學",
           date: "2023-2026",
-          summary: "<p>連續取得一、二等學業獎學金，體現卓越學業表現與學習能力。</p>"
+          summary: "<p>連續三年取得一、二等學業獎學金</p>"
         }
       ]
     },
     certifications: {
       name: "證書",
-      visible: true,
+      visible: false,
       breakBefore: false,
       items: [
         {
@@ -148,7 +141,7 @@ const initialData = {
           name: "Java培訓證書",
           issuer: "澳門澳門生產力暨科技轉移中心",
           date: "2019",
-          summary: "<ul><li><p>精通Java语言核心语法及面向对象编程思想，熟练运用多线程、集合框架、IO/NIO等特性進行高效開發</p></li><li><p>熟悉Spring Boot、Spring Cloud等主流框架</p></li></ul>"
+          summary: "<ul><li><p>精通Java语言核心语法及面向对象编程思想。</p></li><li><p>熟悉Spring Boot等主流框架</p></li></ul>"
         },
         {
           id: "cert2",
@@ -166,9 +159,8 @@ const initialData = {
       items: [
         { id: "sk1", name: "Office", keywords: ["PPT演示", "word文檔", "Excel數據"] },
         { id: "sk2", name: "Matlab", keywords: ["工程仿真", "數學建模"] },
-        { id: "sk3", name: "Python", keywords: ["數據分析", "腳本"] },
-        { id: "sk4", name: "Java", keywords: ["後端技術開發"] },
-        { id: "sk5", name: "AI", keywords: ["AI編程", "大模型應用"] }
+        { id: "sk3", name: "Python", keywords: ["數據分析", "script"] },
+        { id: "1773416188511", name: "AI", keywords: ["AI coding", "LLM部署"] }
       ]
     },
     languages: {
