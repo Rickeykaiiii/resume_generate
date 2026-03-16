@@ -187,9 +187,9 @@ const stripHtml = (html) => {
 // 簡單的 HTML 渲染組件
 const HtmlContent = ({ content, className }) => {
   return (
-    <div 
-      className={`prose prose-sm max-w-none text-gray-600 ${className} [&>ul]:list-disc [&>ul]:pl-5 [&>p]:mb-1 [&>ul]:mb-2`}
-      dangerouslySetInnerHTML={{ __html: content }} 
+    <div
+      className={`prose prose-sm max-w-none text-gray-600 leading-relaxed ${className} [&>ul]:list-disc [&>ul]:pl-5 [&>p]:mb-1 [&>ul]:mb-2`}
+      dangerouslySetInnerHTML={{ __html: content }}
     />
   );
 };
@@ -915,9 +915,9 @@ export default function App() {
 
       {/* --- 右側預覽 (Bronzor 風格) --- */}
       <div className="flex-1 overflow-y-auto bg-white p-8 flex justify-center print:block print:p-0 print:bg-white print:overflow-visible relative">
-        <div 
+        <div
           ref={resumeRef} // 綁定 ref 用於 PDF 生成
-          className="bg-white w-[210mm] min-h-[297mm] print:w-full flex flex-col relative"
+          className="bg-white w-[210mm] min-h-[297mm] print:w-full print:min-h-[594mm] flex flex-col relative"
           style={{ fontFamily: "'Times New Roman', SimSun, '宋体', '宋體', serif" }}
         >
           
@@ -1007,7 +1007,9 @@ export default function App() {
                   <h3 className="text-md font-bold text-gray-900 border-b-2 border-blue-600 pb-1 mb-3 uppercase tracking-wide">
                     {resume.sections.summary.name}
                   </h3>
-                  <HtmlContent content={resume.sections.summary.content} />
+                  <div className="text-sm">
+                    <HtmlContent content={resume.sections.summary.content} />
+                  </div>
                 </section>
               )}
 
@@ -1015,7 +1017,7 @@ export default function App() {
               {resume.sections.education?.visible && (
                 <section style={{ pageBreakBefore: resume.sections.education?.breakBefore ? 'always' : 'auto', paddingTop: resume.sections.education?.breakBefore ? '8mm' : undefined }}>
                   {resume.sections.education?.breakBefore && <PageBreakIndicator />}
-                  <h3 className="text-md font-bold text-gray-900 border-b-2 border-blue-600 pb-1 mb-4 uppercase tracking-wide">
+                  <h3 className="text-lg font-bold text-gray-900 border-b-2 border-blue-600 pb-1 mb-4 uppercase tracking-wide">
                     {resume.sections.education.name}
                   </h3>
                   <div className="flex flex-col gap-5">
@@ -1061,7 +1063,7 @@ export default function App() {
               {resume.sections.projects?.visible && (
                 <section style={{ pageBreakBefore: resume.sections.projects?.breakBefore ? 'always' : 'auto', paddingTop: resume.sections.projects?.breakBefore ? '8mm' : undefined }}>
                   {resume.sections.projects?.breakBefore && <PageBreakIndicator />}
-                  <h3 className="text-md font-bold text-gray-900 border-b-2 border-blue-600 pb-1 mb-4 uppercase tracking-wide">
+                  <h3 className="text-lg font-bold text-gray-900 border-b-2 border-blue-600 pb-1 mb-4 uppercase tracking-wide">
                     {resume.sections.projects.name}
                   </h3>
                   <div className="flex flex-col gap-5">
@@ -1082,7 +1084,7 @@ export default function App() {
                {resume.sections.volunteer?.visible && (
                 <section style={{ pageBreakBefore: resume.sections.volunteer?.breakBefore ? 'always' : 'auto', paddingTop: resume.sections.volunteer?.breakBefore ? '8mm' : undefined }}>
                   {resume.sections.volunteer?.breakBefore && <PageBreakIndicator />}
-                  <h3 className="text-md font-bold text-gray-900 border-b-2 border-blue-600 pb-1 mb-4 uppercase tracking-wide">
+                  <h3 className="text-lg font-bold text-gray-900 border-b-2 border-blue-600 pb-1 mb-4 uppercase tracking-wide">
                     {resume.sections.volunteer.name}
                   </h3>
                   <div className="flex flex-col gap-5">
