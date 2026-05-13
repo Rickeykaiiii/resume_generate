@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Mail, Phone, MapPin, Linkedin, Link as LinkIcon,
   Plus, Trash2, ChevronDown, ChevronUp, Printer,
@@ -25,6 +25,7 @@ const initialData = {
       { id: "2", icon: "gender", name: "", value: "男" },
       { id: "3", icon: "link", name: "", value: "https://www.rickeykai.space/" }
     ],
+    showQRCode: true,
     picture: {
       url: "https://oss.upcv.tech/resume/avatar/cmk3dfhhx0bf4la2bw3ms7tmm/z1vmetvxl59ivc075aoyphzw.jpg?t=1768382515749",
       width: 100,
@@ -177,13 +178,6 @@ const initialData = {
 };
 
 // --- 工具函數 ---
-const stripHtml = (html) => {
-  if (!html) return "";
-  const tmp = document.createElement("DIV");
-  tmp.innerHTML = html;
-  return tmp.textContent || tmp.innerText || "";
-};
-
 // 簡單的 HTML 渲染組件
 const HtmlContent = ({ content, className }) => {
   return (
@@ -282,6 +276,8 @@ export default function App() {
   const [showPageGuides, setShowPageGuides] = useState(false);
   const fileInputRef = useRef(null);
   const resumeRef = useRef(null);
+  const qrTarget = resume.basics.customFields.find(field => field.icon === 'link')?.value?.trim();
+  const qrLabel = qrTarget?.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
   // 更新基本信息
   const updateBasics = (field, value) => {
@@ -646,6 +642,15 @@ export default function App() {
                   onChange={(v) => updateCustomField(idx, v)} 
                 />
               ))}
+              <label className="mt-2 flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={resume.basics.showQRCode !== false}
+                  onChange={(e) => updateBasics('showQRCode', e.target.checked)}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                顯示二維碼
+              </label>
             </div>
           </Accordion>
 
@@ -954,16 +959,18 @@ export default function App() {
                   <h1 className="text-3xl font-bold text-gray-900 mb-2">{resume.basics.name}</h1>
                   <p className="text-lg text-blue-600 font-medium mb-4">{resume.basics.headline}</p>
                 </div>
-                <div className="flex flex-col items-center flex-shrink-0">
-                  <img
-                    src="https://api.qrserver.com/v1/create-qr-code/?size=72x72&data=https://www.rickeykai.space/&margin=0"
-                    alt="QR Code"
-                    width={72}
-                    height={72}
-                    className="block"
-                  />
-                  <span className="text-[9px] text-gray-400 mt-0.5">rickeykai.space</span>
-                </div>
+                {resume.basics.showQRCode !== false && qrTarget && (
+                  <div className="flex flex-col items-center flex-shrink-0">
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=72x72&data=${encodeURIComponent(qrTarget)}&margin=0`}
+                      alt="QR Code"
+                      width={72}
+                      height={72}
+                      className="block"
+                    />
+                    <span className="text-[9px] text-gray-400 mt-0.5">{qrLabel}</span>
+                  </div>
+                )}
               </div>
               
               <div className="flex flex-wrap gap-y-2 gap-x-6 text-sm text-gray-600">
